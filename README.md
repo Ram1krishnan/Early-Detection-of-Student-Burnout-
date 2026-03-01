@@ -222,45 +222,45 @@ Model files:
 
 Step 1: Install dependencies
 
-
+```bash
 pip install -r requirements.txt
-
+```
 
 ---
 
 Step 2: Train model (optional)
 
-
+```bash
 cd src
 python train_model.py
-
+```
 
 ---
 
 Step 3: Generate behavioral insights
 
-
+```bash
 python behavior_analysis.py
 python clustering.py
 python shap_explainer.py
-
+```
 
 ---
 
 Step 4: Run dashboard
 
-
+```bash
 cd dashboard
 python -m streamlit run app.py
-
+```
 
 ---
 
 Step 5: Open dashboard in browser
 
-
+```text
 http://localhost:8501
-
+```
 
 ---
 
