@@ -404,5 +404,4 @@ Key Behavioral Findings:
     st.info("""
 System Impact:
 
-This system enables proactive intervention to reduce student burnout and dropout rates.
-""")
+By enabling proactive intervention, this system empowers institutions to reduce student burnout and effectively prevent academic dropout.""")
