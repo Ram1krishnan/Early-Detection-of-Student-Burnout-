@@ -349,17 +349,3 @@ Possible enhancements:
 - Deep learning models
 
 ---
-
-## 🏆 Hackathon Value
-
-This project goes beyond prediction.
-
-It provides:
-
-- Prediction
-- Explanation
-- Simulation
-- Prevention
-- Intervention planning
-
-This makes it a complete Behavioral Intelligence System.
