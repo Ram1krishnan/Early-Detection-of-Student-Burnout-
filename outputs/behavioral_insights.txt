@@ -1,0 +1,26 @@
+Average engagement by risk level:
+
+burnout_risk_level
+High      2.660000
+Low       5.451075
+Medium    4.276935
+Name: engagement_score, dtype: float64
+
+
+Average attendance by risk level:
+
+burnout_risk_level
+High      49.500000
+Low       77.661994
+Medium    65.414328
+Name: attendance_percentage, dtype: float64
+
+
+Average stress level by risk level:
+
+burnout_risk_level
+High      7.750000
+Low       4.068536
+Medium    5.398080
+Name: stress_level, dtype: float64
+
