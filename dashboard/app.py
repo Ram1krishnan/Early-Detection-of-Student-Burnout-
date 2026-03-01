@@ -48,12 +48,14 @@ to identify students at risk of burnout and recommend interventions.
 # TABS
 # ================================
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab_sim, tab3, tab4, tab_rank, tab5 = st.tabs([
     "📊 Overall Behavioral Analytics",
     "👤 Individual Student Analysis",
-    "📈 Student Risk Timeline",
+    "� Intervention Simulator",
+    "�📈 Student Risk Timeline",
     "🧠 Explainable AI",
-    "📖 Behavioral Insights"
+    "� Risk Ranking & Early Warning",
+    "�📖 Behavioral Insights"
 ])
 
 # =====================================================
@@ -167,6 +169,63 @@ This prediction is based on behavioral patterns including engagement, stress, an
 
 
 # =====================================================
+# TAB: INTERVENTION SIMULATOR
+# =====================================================
+
+with tab_sim:
+
+    st.header("Intervention Impact Simulator")
+
+    student_id_sim = st.selectbox("Select Student ID for Simulation", df["student_id"], key="sim_student")
+    student_sim = df[df["student_id"] == student_id_sim]
+
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Attendance %", f"{float(student_sim['attendance_percentage'].iloc[0]):.1f}")
+    col2.metric("Stress Level", float(student_sim["stress_level"].iloc[0]))
+    col3.metric("Sleep Hours", float(student_sim["sleep_hours_per_day"].iloc[0]))
+    col4.metric("Engagement Score", float(student_sim["engagement_score"].iloc[0]))
+
+    attendance_change = st.slider("Increase Attendance %", 0, 30, 10)
+    stress_reduction = st.slider("Reduce Stress Level", 0, 5, 1)
+    sleep_increase = st.slider("Increase Sleep Hours", 0.0, 3.0, 0.5)
+
+    simulated_student = student_sim.copy()
+    simulated_student["attendance_percentage"] += attendance_change
+    simulated_student["stress_level"] -= stress_reduction
+    simulated_student["sleep_hours_per_day"] += sleep_increase
+
+    simulated_student["attendance_percentage"] = simulated_student["attendance_percentage"].clip(upper=100)
+    simulated_student["stress_level"] = simulated_student["stress_level"].clip(lower=1)
+    simulated_student["sleep_hours_per_day"] = simulated_student["sleep_hours_per_day"].clip(upper=10)
+
+    original_scaled = scaler.transform(student_sim[FEATURE_COLUMNS])
+    sim_scaled = scaler.transform(simulated_student[FEATURE_COLUMNS])
+
+    original_prediction = model.predict(original_scaled)[0]
+    sim_prediction = model.predict(sim_scaled)[0]
+
+    original_prob = model.predict_proba(original_scaled).max()
+    sim_prob = model.predict_proba(sim_scaled).max()
+
+    col_orig, col_sim = st.columns(2)
+
+    with col_orig:
+        st.subheader("Original")
+        st.metric("Original Risk Level", original_prediction)
+        st.metric("Original Risk Probability", f"{original_prob*100:.2f}%")
+
+    with col_sim:
+        st.subheader("Simulated")
+        st.metric("Simulated Risk Level", sim_prediction)
+        st.metric("Simulated Risk Probability", f"{sim_prob*100:.2f}%")
+
+    if sim_prob < original_prob or (original_prediction in ["High", "Medium"] and sim_prediction == "Low"):
+        st.success("If attendance increases and stress reduces, burnout risk decreases significantly.")
+    else:
+        st.warning("The simulated intervention may not be sufficient to reduce burnout risk.")
+
+
+# =====================================================
 # TAB 3: STUDENT BEHAVIORAL RISK TIMELINE
 # =====================================================
 
@@ -268,6 +327,53 @@ with tab4:
     st.info("""
 Interpretation:
 Engagement, stress, and attendance are the most influential behavioral predictors of burnout.
+""")
+
+
+# =====================================================
+# TAB: RISK RANKING & EARLY WARNING
+# =====================================================
+
+with tab_rank:
+
+    st.header("Risk Ranking & Early Warning System")
+
+    df["future_risk_score"] = df["burnout_risk_score"] + (df["burnout_velocity"] * 100)
+    df["future_risk_score"] = df["future_risk_score"].clip(upper=100)
+
+    def assign_priority(score):
+        if score > 80:
+            return "Critical"
+        elif score > 60:
+            return "High"
+        elif score > 40:
+            return "Medium"
+        else:
+            return "Low"
+
+    df["priority"] = df["burnout_risk_score"].apply(assign_priority)
+
+    rank_df = df.sort_values("burnout_risk_score", ascending=False)
+
+    st.dataframe(rank_df[["student_id", "burnout_risk_score", "future_risk_score", "priority"]].head(20))
+
+    future_high = df[df["future_risk_score"] > 80]
+    
+    st.warning("Students likely to become high risk soon")
+    st.dataframe(future_high[["student_id", "burnout_risk_score", "future_risk_score", "priority"]])
+
+    fig_bar = px.bar(
+        rank_df.head(10),
+        x="student_id",
+        y="burnout_risk_score",
+        color="priority",
+        title="Top 10 Highest Risk Students"
+    )
+    st.plotly_chart(fig_bar, width="stretch")
+
+    st.info("""
+Interpretation:
+This ranking enables administrators to prioritize intervention for highest risk students.
 """)
 
 
