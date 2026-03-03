@@ -66,7 +66,7 @@ Helps institutions design targeted interventions.
 
 ---
 
-### 4. Intervention Impact Simulator ⭐ (WOW Feature)
+### 4. Intervention Impact Simulator ⭐
 
 Allows administrators to simulate behavioral improvements and observe impact on burnout risk.
 
@@ -86,7 +86,7 @@ This enables proactive intervention planning.
 
 ---
 
-### 5. Risk Ranking and Early Warning System ⭐ (WOW Feature)
+### 5. Risk Ranking and Early Warning System ⭐
 
 Ranks students based on burnout risk and future risk prediction.
 
